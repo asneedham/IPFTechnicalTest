@@ -17,6 +17,21 @@ namespace IPFTechnicalTest.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
 
+            modelBuilder.Entity("BarBeer", b =>
+                {
+                    b.Property<int>("BarId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BeerId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("BarId", "BeerId");
+
+                    b.HasIndex("BeerId");
+
+                    b.ToTable("BarBeer");
+                });
+
             modelBuilder.Entity("IPFTechnicalTest.Models.Bar", b =>
                 {
                     b.Property<int>("BarId")
@@ -56,9 +71,6 @@ namespace IPFTechnicalTest.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("BarId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("BreweryId")
                         .HasColumnType("INTEGER");
 
@@ -71,8 +83,6 @@ namespace IPFTechnicalTest.Migrations
 
                     b.HasKey("BeerId");
 
-                    b.HasIndex("BarId");
-
                     b.HasIndex("BreweryId");
 
                     b.ToTable("Beer");
@@ -81,30 +91,35 @@ namespace IPFTechnicalTest.Migrations
                         new
                         {
                             BeerId = 1,
+                            BreweryId = 1,
                             Name = "Corona",
                             PercentageAlcoholByVolume = 4.5m
                         },
                         new
                         {
                             BeerId = 2,
+                            BreweryId = 1,
                             Name = "Modelo",
                             PercentageAlcoholByVolume = 4m
                         },
                         new
                         {
                             BeerId = 3,
+                            BreweryId = 2,
                             Name = "Pacifico",
                             PercentageAlcoholByVolume = 3.5m
                         },
                         new
                         {
                             BeerId = 4,
+                            BreweryId = 2,
                             Name = "Heineken",
                             PercentageAlcoholByVolume = 4.7m
                         },
                         new
                         {
                             BeerId = 5,
+                            BreweryId = 2,
                             Name = "Amstel",
                             PercentageAlcoholByVolume = 4.8m
                         });
@@ -137,20 +152,26 @@ namespace IPFTechnicalTest.Migrations
                         });
                 });
 
-            modelBuilder.Entity("IPFTechnicalTest.Models.Beer", b =>
+            modelBuilder.Entity("BarBeer", b =>
                 {
                     b.HasOne("IPFTechnicalTest.Models.Bar", null)
-                        .WithMany("Beers")
-                        .HasForeignKey("BarId");
+                        .WithMany()
+                        .HasForeignKey("BarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.HasOne("IPFTechnicalTest.Models.Beer", null)
+                        .WithMany()
+                        .HasForeignKey("BeerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("IPFTechnicalTest.Models.Beer", b =>
+                {
                     b.HasOne("IPFTechnicalTest.Models.Brewery", null)
                         .WithMany("Beers")
                         .HasForeignKey("BreweryId");
-                });
-
-            modelBuilder.Entity("IPFTechnicalTest.Models.Bar", b =>
-                {
-                    b.Navigation("Beers");
                 });
 
             modelBuilder.Entity("IPFTechnicalTest.Models.Brewery", b =>

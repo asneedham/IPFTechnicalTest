@@ -43,22 +43,40 @@ namespace IPFTechnicalTest.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     PercentageAlcoholByVolume = table.Column<decimal>(type: "TEXT", nullable: false),
-                    BarId = table.Column<int>(type: "INTEGER", nullable: true),
                     BreweryId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Beer", x => x.BeerId);
                     table.ForeignKey(
-                        name: "FK_Beer_Bar_BarId",
-                        column: x => x.BarId,
-                        principalTable: "Bar",
-                        principalColumn: "BarId");
-                    table.ForeignKey(
                         name: "FK_Beer_Brewery_BreweryId",
                         column: x => x.BreweryId,
                         principalTable: "Brewery",
                         principalColumn: "BreweryId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BarBeer",
+                columns: table => new
+                {
+                    BarId = table.Column<int>(type: "INTEGER", nullable: false),
+                    BeerId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BarBeer", x => new { x.BarId, x.BeerId });
+                    table.ForeignKey(
+                        name: "FK_BarBeer_Bar_BarId",
+                        column: x => x.BarId,
+                        principalTable: "Bar",
+                        principalColumn: "BarId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BarBeer_Beer_BeerId",
+                        column: x => x.BeerId,
+                        principalTable: "Beer",
+                        principalColumn: "BeerId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -72,31 +90,6 @@ namespace IPFTechnicalTest.Migrations
                 values: new object[] { 2, "Amersham", "The Pomeroy" });
 
             migrationBuilder.InsertData(
-                table: "Beer",
-                columns: new[] { "BeerId", "BarId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
-                values: new object[] { 1, null, null, "Corona", 4.5m });
-
-            migrationBuilder.InsertData(
-                table: "Beer",
-                columns: new[] { "BeerId", "BarId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
-                values: new object[] { 2, null, null, "Modelo", 4m });
-
-            migrationBuilder.InsertData(
-                table: "Beer",
-                columns: new[] { "BeerId", "BarId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
-                values: new object[] { 3, null, null, "Pacifico", 3.5m });
-
-            migrationBuilder.InsertData(
-                table: "Beer",
-                columns: new[] { "BeerId", "BarId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
-                values: new object[] { 4, null, null, "Heineken", 4.7m });
-
-            migrationBuilder.InsertData(
-                table: "Beer",
-                columns: new[] { "BeerId", "BarId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
-                values: new object[] { 5, null, null, "Amstel", 4.8m });
-
-            migrationBuilder.InsertData(
                 table: "Brewery",
                 columns: new[] { "BreweryId", "Name" },
                 values: new object[] { 1, "Grupo Modelo" });
@@ -106,10 +99,35 @@ namespace IPFTechnicalTest.Migrations
                 columns: new[] { "BreweryId", "Name" },
                 values: new object[] { 2, "Heineken N.V." });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Beer_BarId",
+            migrationBuilder.InsertData(
                 table: "Beer",
-                column: "BarId");
+                columns: new[] { "BeerId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
+                values: new object[] { 1, 1, "Corona", 4.5m });
+
+            migrationBuilder.InsertData(
+                table: "Beer",
+                columns: new[] { "BeerId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
+                values: new object[] { 2, 1, "Modelo", 4m });
+
+            migrationBuilder.InsertData(
+                table: "Beer",
+                columns: new[] { "BeerId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
+                values: new object[] { 3, 2, "Pacifico", 3.5m });
+
+            migrationBuilder.InsertData(
+                table: "Beer",
+                columns: new[] { "BeerId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
+                values: new object[] { 4, 2, "Heineken", 4.7m });
+
+            migrationBuilder.InsertData(
+                table: "Beer",
+                columns: new[] { "BeerId", "BreweryId", "Name", "PercentageAlcoholByVolume" },
+                values: new object[] { 5, 2, "Amstel", 4.8m });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BarBeer_BeerId",
+                table: "BarBeer",
+                column: "BeerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Beer_BreweryId",
@@ -120,10 +138,13 @@ namespace IPFTechnicalTest.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Beer");
+                name: "BarBeer");
 
             migrationBuilder.DropTable(
                 name: "Bar");
+
+            migrationBuilder.DropTable(
+                name: "Beer");
 
             migrationBuilder.DropTable(
                 name: "Brewery");

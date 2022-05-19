@@ -57,7 +57,7 @@ namespace IPFTechnicalTest.Controllers
         {
             int breweryId = await _repository.AddBrewery(brewery);
 
-            return CreatedAtAction(nameof(PostBrewery), new { id = breweryId }, brewery);
+            return CreatedAtAction(nameof(GetBrewery), new { id = breweryId }, brewery);
         }
 
         [HttpGet("beer")]

@@ -220,7 +220,7 @@ namespace IPFTechnicalTest.Repository
                 return null;
             }
 
-            foreach(var beer in bar.Beers)
+            foreach (var beer in bar.Beers)
             {
                 beers.Add(beer);
             }

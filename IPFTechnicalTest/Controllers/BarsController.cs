@@ -57,7 +57,7 @@ namespace IPFTechnicalTest.Controllers
         {
             int barId = await _repository.AddBar(bar);
 
-            return CreatedAtAction(nameof(PostBar), new { id = barId }, bar);
+            return CreatedAtAction(nameof(GetBar), new { id = barId }, bar);
         }
 
         [HttpGet("beer")]
@@ -75,7 +75,8 @@ namespace IPFTechnicalTest.Controllers
         [HttpPost("beer")]
         public async Task<ActionResult<int>> PostBarBeer(int barId, int beerId)
         {
-            return await _repository.AddBarBeer(barId, beerId);
+            //return await _repository.AddBarBeer(barId, beerId);
+            return Ok();
         }
 
         // DELETE: api/Bars/5

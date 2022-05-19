@@ -51,7 +51,7 @@ namespace IPFTechnicalTest.Controllers
         {
             int beerId = await _repository.AddBeer(beer);
 
-            return CreatedAtAction(nameof(PostBeer), new { id = beerId }, beer);
+            return CreatedAtAction(nameof(GetBeer), new { id = beerId }, beer);
         }
 
         // DELETE: api/Beers/5

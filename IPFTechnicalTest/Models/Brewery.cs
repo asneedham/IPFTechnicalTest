@@ -1,4 +1,6 @@
-﻿namespace IPFTechnicalTest.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace IPFTechnicalTest.Models
 {
     public class Brewery
     {
@@ -6,6 +8,6 @@
 
         public string Name { get; set; } = String.Empty;
 
-        public virtual ICollection<Beer>? Beers { get; set; }
+        public virtual ICollection<Beer> Beers { get; set; }
     }
 }

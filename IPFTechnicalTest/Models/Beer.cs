@@ -1,4 +1,6 @@
-﻿namespace IPFTechnicalTest.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace IPFTechnicalTest.Models
 {
     public class Beer
     {
@@ -9,8 +11,10 @@
         public decimal PercentageAlcoholByVolume { get; set; }
 
         public int? BreweryId { get; set; }
-        public virtual Brewery? Brewery { get; set; }
+        public virtual Brewery Brewery { get; set; }
 
-        public virtual ICollection<Bar>? Bars { get; set; }
+        [ForeignKey("BeerId")]
+        public ICollection<Bar> Bars { get; set; }
+
     }
 }
