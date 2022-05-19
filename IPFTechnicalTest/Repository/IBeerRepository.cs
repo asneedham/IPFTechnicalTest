@@ -8,19 +8,21 @@ namespace IPFTechnicalTest.Repository
         Task<List<Bar>> GetAllBars();
         Task<int> AddBar(Bar bar);
         Task<int> UpdateBar(Bar bar);
-        Task<bool> DeleteBar(int id);
 
         Task<Beer> GetBeer(int id);
         Task<List<Beer>> GetAllBeers();
-        Task<int> AddBeer(Beer bar);
+        Task<int> AddBeer(Beer beer);
         Task<int> UpdateBeer(Beer beer);
-        Task<bool> DeleteBeer(int id);
         Task<List<Beer>> GetBeerByAlcoholVolumeRange(decimal? gtVolume, decimal? ltVolume);
 
         Task<Brewery> GetBrewery(int id);
         Task<List<Brewery>> GetAllBreweries();
         Task<int> AddBrewery(Brewery brewery);
         Task<int> UpdateBrewery(Brewery brewery);
-        Task<bool> DeleteBrewery(int id);
+
+        Task<int> AddBarBeer(int barId, int beerId);
+        Task<int> AddBreweryBeer(int breweryId, int beerId);
+        Task<List<Bar>> GetAllBarsAndAssociatedBeers();
+        Task<List<Beer>> GetBeersForBar(int barId);
     }
 }

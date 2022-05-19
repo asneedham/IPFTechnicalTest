@@ -5,7 +5,7 @@
         public int BreweryId { get; set; }
 
         public string Name { get; set; } = String.Empty;
-    
-        public List<Beer> Beers { get; set; } = new List<Beer>();
+
+        public virtual ICollection<Beer>? Beers { get; set; }
     }
 }

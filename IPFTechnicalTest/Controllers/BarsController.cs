@@ -5,7 +5,7 @@ using IPFTechnicalTest.Repository;
 
 namespace IPFTechnicalTest.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/bar")]
     [ApiController]
     public class BarsController : ControllerBase
     {
@@ -60,18 +60,36 @@ namespace IPFTechnicalTest.Controllers
             return CreatedAtAction(nameof(PostBar), new { id = barId }, bar);
         }
 
-        // DELETE: api/Bars/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBar(int id)
+        [HttpGet("beer")]
+        public async Task<ActionResult<IEnumerable<Bar>>> GetBarsWithBeers()
         {
-            var result = await _repository.DeleteBar(id);
-
-            if (!result)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return await _repository.GetAllBars();
         }
+
+        [HttpGet("{barId}/beer")]
+        public async Task<ActionResult<Bar>> GetBarWithBeers(int barId)
+        {
+            return await _repository.GetBar(barId);
+        }
+
+        [HttpPost("beer")]
+        public async Task<ActionResult<int>> PostBarBeer(int barId, int beerId)
+        {
+            return await _repository.AddBarBeer(barId, beerId);
+        }
+
+        // DELETE: api/Bars/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteBar(int id)
+        //{
+        //    var result = await _repository.DeleteBar(id);
+
+        //    if (!result)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return NoContent();
+        //}
     }
 }

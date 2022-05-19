@@ -64,37 +64,37 @@ namespace IPFTechnicalTestUnitTests
             repositoryMock.Received().AddBar(bar);
         }
 
-        [TestMethod]
-        public void Repository_DeleteExistingBar_ReturnNoContentStatusCode()
-        {
-            // Arrange
-            var repositoryMock = Substitute.For<IBeerRepository>();
-            repositoryMock.DeleteBar(1).ReturnsForAnyArgs(true);
+        //[TestMethod]
+        //public void Repository_DeleteExistingBar_ReturnNoContentStatusCode()
+        //{
+        //    // Arrange
+        //    var repositoryMock = Substitute.For<IBeerRepository>();
+        //    repositoryMock.DeleteBar(1).ReturnsForAnyArgs(true);
 
-            var barsController = new BarsController(repositoryMock);
+        //    var barsController = new BarsController(repositoryMock);
 
-            // Act
-            var result = barsController.DeleteBar(1).Result;
+        //    // Act
+        //    var result = barsController.DeleteBar(1).Result;
 
-            // Assert
-            Assert.AreEqual("NoContentResult", result.GetType().Name); // status 204
-        }
+        //    // Assert
+        //    Assert.AreEqual("NoContentResult", result.GetType().Name); // status 204
+        //}
 
-        [TestMethod]
-        public void Repository_DeleteNonExistantBar_ReturnNotFoundStatusCode()
-        {
-            // Arrange
-            var repositoryMock = Substitute.For<IBeerRepository>();
-            repositoryMock.DeleteBar(1).ReturnsForAnyArgs(false);
+        //[TestMethod]
+        //public void Repository_DeleteNonExistantBar_ReturnNotFoundStatusCode()
+        //{
+        //    // Arrange
+        //    var repositoryMock = Substitute.For<IBeerRepository>();
+        //    repositoryMock.DeleteBar(1).ReturnsForAnyArgs(false);
 
-            var barsController = new BarsController(repositoryMock);
+        //    var barsController = new BarsController(repositoryMock);
 
-            // Act
-            var result = barsController.DeleteBar(1).Result;
+        //    // Act
+        //    var result = barsController.DeleteBar(1).Result;
 
-            // Assert
-            Assert.AreEqual("NotFoundResult", result.GetType().Name);  // status 404
-        }
+        //    // Assert
+        //    Assert.AreEqual("NotFoundResult", result.GetType().Name);  // status 404
+        //}
 
         [TestMethod]
         public void Repository_UpdateBar_ReturnNoContentStatusCode()
@@ -156,6 +156,21 @@ namespace IPFTechnicalTestUnitTests
 
             // Assert
             Assert.AreEqual("BadRequestResult", result.GetType().Name); // status 400
+        }
+
+       
+
+        [TestMethod]
+        public void Repository_GetAllBarsAndAssociatedBeers()
+        {
+            // Arrange
+            var context = PrepareTestContext();
+            var repo = new BeerRepository(context);
+
+            // Act
+            repo.GetAllBarsAndAssociatedBeers();
+
+            // Assert
         }
 
         [TestMethod]

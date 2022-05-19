@@ -8,6 +8,6 @@
 
         public string Address { get; set; } = string.Empty;
 
-        public List<Beer>? Beers { get; set; }
+        public virtual ICollection<Beer>? Beers { get; set; }
     }
 }

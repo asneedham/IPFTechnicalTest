@@ -5,7 +5,7 @@ using IPFTechnicalTest.Repository;
 
 namespace IPFTechnicalTest.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/beer")]
     [ApiController]
     public class BeersController : ControllerBase
     {
@@ -14,13 +14,6 @@ namespace IPFTechnicalTest.Controllers
         public BeersController(IBeerRepository repository)
         {
             _repository = repository;
-        }
-
-        // GET: api/Beers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Beer>>> GetBeer()
-        {
-            return await _repository.GetAllBeers();
         }
 
         // GET: api/Beers/5
@@ -53,7 +46,7 @@ namespace IPFTechnicalTest.Controllers
 
         // POST: api/Beers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost()]
         public async Task<ActionResult<Beer>> PostBeer(Beer beer)
         {
             int beerId = await _repository.AddBeer(beer);
@@ -62,24 +55,24 @@ namespace IPFTechnicalTest.Controllers
         }
 
         // DELETE: api/Beers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBeer(int id)
-        {
-            var result = await _repository.DeleteBeer(id);
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteBeer(int id)
+        //{
+        //    var result = await _repository.DeleteBeer(id);
 
-            if (!result)
-            {
-                return NotFound();
-            }
+        //    if (!result)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // GET: api/Beers?gtAlcoholByVolume=&ltAcoloholByVolume
-        [HttpGet("{gtAlcoholByVolume}&{ltAlcoholByVolume}")]
-        public async Task<ActionResult<IEnumerable<Beer>>> GetBeerByAlcoholVolumeRange(decimal? gtVolume, decimal? ltVolume)
+        [HttpGet("beer")]
+        public async Task<ActionResult<IEnumerable<Beer>>> GetBeerByAlcoholVolumeRange(decimal? gtAlcoholByVolume, decimal? ltAlcoholByVolume)
         {
-            var beersWithinRange = await _repository.GetBeerByAlcoholVolumeRange(gtVolume, ltVolume);
+            var beersWithinRange = await _repository.GetBeerByAlcoholVolumeRange(gtAlcoholByVolume, ltAlcoholByVolume);
 
             if (beersWithinRange == null)
             {

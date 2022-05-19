@@ -49,15 +49,15 @@ namespace IPFTechnicalTest.Repository
             }
         }
 
-        public async Task<bool> DeleteBar(int id)
-        {
-            var bar = await _dbContext.Bar.FindAsync(id);
+        //public async Task<bool> DeleteBar(int id)
+        //{
+        //    var bar = await _dbContext.Bar.FindAsync(id);
             
-            _dbContext.Bar.Remove(bar);
-            await _dbContext.SaveChangesAsync();
+        //    _dbContext.Bar.Remove(bar);
+        //    await _dbContext.SaveChangesAsync();
 
-            return true;
-        }
+        //    return true;
+        //}
 
         public async Task<List<Beer>> GetAllBeers()
         {
@@ -167,14 +167,65 @@ namespace IPFTechnicalTest.Repository
             }
         }
 
-        public async Task<bool> DeleteBrewery(int id)
+        //public async Task<bool> DeleteBrewery(int id)
+        //{
+        //    var brewery = await _dbContext.Brewery.FindAsync(id);
+
+        //    _dbContext.Brewery.Remove(brewery);
+        //    await _dbContext.SaveChangesAsync();
+
+        //    return true;
+        //}
+
+        public async Task<int> AddBarBeer(int barId, int beerId)
         {
-            var brewery = await _dbContext.Brewery.FindAsync(id);
+            var bar = _dbContext.Bar.FirstOrDefault(e => e.BarId == barId);
+            var beer = _dbContext.Beer.FirstOrDefault(x => x.BeerId == beerId);
+            if (beer == null)
+            {
+                return -1;
+            }
 
-            _dbContext.Brewery.Remove(brewery);
-            await _dbContext.SaveChangesAsync();
+            bar.Beers.Add(beer);
 
-            return true;
+            return await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> AddBreweryBeer(int breweryId, int beerId)
+        {
+            var brewery = _dbContext.Brewery.FirstOrDefault(e => e.BreweryId == breweryId);
+            var beer = _dbContext.Beer.FirstOrDefault(x => x.BeerId == beerId);
+            if (beer == null)
+            {
+                return -1;
+            }
+
+            brewery.Beers.Add(beer);
+
+            return await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<Bar>> GetAllBarsAndAssociatedBeers()
+        {
+            return await _dbContext.Bar.ToListAsync();
+        }
+
+        public async Task<List<Beer>> GetBeersForBar(int barId)
+        {
+            var beers = new List<Beer>();
+            var bar = await _dbContext.Bar.FirstOrDefaultAsync(x => x.BarId == barId);
+
+            if(bar == null)
+            {
+                return null;
+            }
+
+            foreach(var beer in bar.Beers)
+            {
+                beers.Add(beer);
+            }
+
+            return beers;
         }
     }
 }

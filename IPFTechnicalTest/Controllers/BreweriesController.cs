@@ -5,7 +5,7 @@ using IPFTechnicalTest.Repository;
 
 namespace IPFTechnicalTest.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/brewery")]
     [ApiController]
     public class BreweriesController : ControllerBase
     {
@@ -60,18 +60,36 @@ namespace IPFTechnicalTest.Controllers
             return CreatedAtAction(nameof(PostBrewery), new { id = breweryId }, brewery);
         }
 
-        // DELETE: api/Breweries/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrewery(int id)
+        [HttpGet("beer")]
+        public async Task<ActionResult<IEnumerable<Brewery>>> GetBreweriesWithBeers()
         {
-            var result = await _repository.DeleteBrewery(id);
-
-            if (!result)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return await _repository.GetAllBreweries();
         }
+
+        [HttpGet("{breweryId}/beer")]
+        public async Task<ActionResult<Brewery>> GetBreweryWithBeers(int breweryId)
+        {
+            return await _repository.GetBrewery(breweryId);
+        }
+
+        [HttpPost("beer")]
+        public async Task<ActionResult<int>> PostBreweryBeer(int breweryId, int beerId)
+        {
+            return await _repository.AddBreweryBeer(breweryId, beerId);
+        }
+
+        // DELETE: api/Breweries/5
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteBrewery(int id)
+        //{
+        //    var result = await _repository.DeleteBrewery(id);
+
+        //    if (!result)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return NoContent();
+        //}
     }
 }
