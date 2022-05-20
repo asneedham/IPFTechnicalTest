@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 using IPFTechnicalTest.DataAccess;
 using IPFTechnicalTest.Repository;
 

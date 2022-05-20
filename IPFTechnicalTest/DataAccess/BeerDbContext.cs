@@ -15,9 +15,14 @@ namespace IPFTechnicalTest.DataAccess
         public DbSet<Beer> Beer { get; set; }
         public DbSet<Brewery> Brewery { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLazyLoadingProxies();
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Bar>().HasMany(b => b.Beers).WithMany(b => b.Bars);
+            builder.Entity<Bar>().HasMany(x => x.Beers).WithMany("Bars");
 
             builder.Entity<Brewery>().HasData(
                 new Brewery
@@ -37,36 +42,31 @@ namespace IPFTechnicalTest.DataAccess
                 {
                     BeerId = 1,
                     Name = "Corona",
-                    PercentageAlcoholByVolume = 4.5m,
-                    BreweryId = 1
+                    PercentageAlcoholByVolume = 4.5m
                 },
                 new Beer
                 {
                     BeerId = 2,
                     Name = "Modelo",
-                    PercentageAlcoholByVolume = 4m,
-                    BreweryId = 1
+                    PercentageAlcoholByVolume = 4m
                 },
                 new Beer
                 {
                     BeerId = 3,
                     Name = "Pacifico",
-                    PercentageAlcoholByVolume = 3.5m,
-                    BreweryId = 2
+                    PercentageAlcoholByVolume = 3.5m
                 },
                 new Beer
                 {
                     BeerId = 4,
                     Name = "Heineken",
-                    PercentageAlcoholByVolume = 4.7m,
-                    BreweryId = 2
+                    PercentageAlcoholByVolume = 4.7m
                 },
                 new Beer
                 {
                     BeerId = 5,
                     Name = "Amstel",
-                    PercentageAlcoholByVolume = 4.8m,
-                    BreweryId = 2
+                    PercentageAlcoholByVolume = 4.8m
                 }
             );
 

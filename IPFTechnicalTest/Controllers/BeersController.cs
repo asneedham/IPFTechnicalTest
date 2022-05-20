@@ -2,6 +2,7 @@
 
 using IPFTechnicalTest.Models;
 using IPFTechnicalTest.Repository;
+using IPFTechnicalTest.ViewModels;
 
 namespace IPFTechnicalTest.Controllers
 {
@@ -16,25 +17,37 @@ namespace IPFTechnicalTest.Controllers
             _repository = repository;
         }
 
-        // GET: api/Beers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Beer>> GetBeer(int id)
+        public async Task<ActionResult<BeerViewModel>> GetBeer(int id)
         {
-            return await _repository.GetBeer(id);
+            var dbBeer = await _repository.GetBeer(id);
+
+            var beer = new BeerViewModel()
+            {
+                BeerId = dbBeer.BeerId,
+                BreweryId = dbBeer.BreweryId.HasValue ? dbBeer.BreweryId.Value : 0,
+                Name = dbBeer.Name,
+                PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume
+            };
+
+            return beer;
         }
 
 
-        // PUT: api/Beers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBeer(int id, Beer beer)
+        public async Task<IActionResult> PutBeer(int id, BeerViewModel beer)
         {
             if (id != beer.BeerId)
             {
                 return BadRequest();
             }
 
-            var result = await _repository.UpdateBeer(beer);
+            var dbBeer = await _repository.GetBeer(id);
+
+            dbBeer.PercentageAlcoholByVolume = beer.PercentageAlcoholByVolume;
+            dbBeer.Name = beer.Name;
+            
+            var result = await _repository.UpdateBeer(dbBeer);
 
             if (result == 0)
             {
@@ -44,39 +57,43 @@ namespace IPFTechnicalTest.Controllers
             return NoContent();
         }
 
-        // POST: api/Beers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost()]
-        public async Task<ActionResult<Beer>> PostBeer(Beer beer)
+        public async Task<ActionResult<BeerViewModel>> PostBeer(BeerViewModel beer)
         {
-            int beerId = await _repository.AddBeer(beer);
+            var dbBeer = new Beer
+            {
+                BeerId = beer.BeerId,
+                Name = beer.Name,
+                PercentageAlcoholByVolume = beer.PercentageAlcoholByVolume
+            };
+
+            int beerId = await _repository.AddBeer(dbBeer);
 
             return CreatedAtAction(nameof(GetBeer), new { id = beerId }, beer);
         }
 
-        // DELETE: api/Beers/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteBeer(int id)
-        //{
-        //    var result = await _repository.DeleteBeer(id);
-
-        //    if (!result)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return NoContent();
-        //}
-
-        // GET: api/Beers?gtAlcoholByVolume=&ltAcoloholByVolume
-        [HttpGet("beer")]
-        public async Task<ActionResult<IEnumerable<Beer>>> GetBeerByAlcoholVolumeRange(decimal? gtAlcoholByVolume, decimal? ltAlcoholByVolume)
+        [HttpGet()]
+        public async Task<ActionResult<IEnumerable<BeerViewModel>>> GetBeerByAlcoholVolumeRange(decimal? gtAlcoholByVolume, decimal? ltAlcoholByVolume)
         {
-            var beersWithinRange = await _repository.GetBeerByAlcoholVolumeRange(gtAlcoholByVolume, ltAlcoholByVolume);
+            var dbBeersWithinRange = await _repository.GetBeerByAlcoholVolumeRange(gtAlcoholByVolume, ltAlcoholByVolume);
 
-            if (beersWithinRange == null)
+            if (dbBeersWithinRange == null)
             {
                 return NotFound();
+            }
+
+            var beersWithinRange = new List<BeerViewModel>();
+            foreach(var dbBeer in dbBeersWithinRange)
+            {
+                var beer = new BeerViewModel
+                {
+                    BeerId = dbBeer.BeerId,
+                    BreweryId = dbBeer.BreweryId.HasValue ? dbBeer.BreweryId.Value : 0,
+                    Name = dbBeer.Name,
+                    PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume
+                };
+
+                beersWithinRange.Add(beer);
             }
 
             return beersWithinRange;

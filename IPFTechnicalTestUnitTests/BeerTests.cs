@@ -8,6 +8,7 @@ using IPFTechnicalTest.Controllers;
 using IPFTechnicalTest.DataAccess;
 using IPFTechnicalTest.Models;
 using IPFTechnicalTest.Repository;
+using IPFTechnicalTest.ViewModels;
 
 namespace IPFTechnicalTestUnitTests
 {
@@ -50,7 +51,19 @@ namespace IPFTechnicalTestUnitTests
         public void Repository_PostBar_NewBarAdded()
         {
             // Arrange
-            var bar = new Bar();
+            var barViewModel = new BarViewModel
+            {
+                BarId = 1,
+                Name = "Test Bar",
+                Address = "Test Address for Test Bar"
+            };
+
+            var bar = new Bar
+            {
+                BarId = 1,
+                Name = barViewModel.Name,
+                Address = barViewModel.Address
+            };
 
             var repositoryMock = Substitute.For<IBeerRepository>();
             repositoryMock.AddBar(bar).ReturnsForAnyArgs(1);
@@ -58,7 +71,7 @@ namespace IPFTechnicalTestUnitTests
             var barsController = new BarsController(repositoryMock);
 
             // Act
-            var result = barsController.PostBar(bar).Result;
+            var result = barsController.PostBar(barViewModel).Result;
 
             // Assert
             repositoryMock.Received().AddBar(bar);
@@ -100,9 +113,19 @@ namespace IPFTechnicalTestUnitTests
         public void Repository_UpdateBar_ReturnNoContentStatusCode()
         {
             // Arrange
+
+            var barViewModel = new BarViewModel
+            {
+                BarId = 1,
+                Name = "Test Bar",
+                Address = "Test Address for Test Bar"
+            };
+
             var bar = new Bar
             {
-                BarId = 1
+                BarId = 1,
+                Name = barViewModel.Name,
+                Address = barViewModel.Address
             };
 
             var repositoryMock = Substitute.For<IBeerRepository>();
@@ -111,7 +134,7 @@ namespace IPFTechnicalTestUnitTests
             var barsController = new BarsController(repositoryMock);
 
             // Act
-            var result = barsController.PutBar(bar.BarId, bar).Result;
+            var result = barsController.PutBar(bar.BarId, barViewModel).Result;
 
             // Assert
             Assert.AreEqual("NoContentResult", result.GetType().Name); // status 204
@@ -121,9 +144,18 @@ namespace IPFTechnicalTestUnitTests
         public void Repository_UpdateBarReceiveException_ReturnNoContentStatusCode()
         {
             // Arrange
+            var barViewModel = new BarViewModel
+            {
+                BarId = 1,
+                Name = "Test Bar",
+                Address = "Test Address for Test Bar"
+            };
+
             var bar = new Bar
             {
-                BarId = 1
+                BarId = 1,
+                Name = barViewModel.Name,
+                Address = barViewModel.Address
             };
 
             var repositoryMock = Substitute.For<IBeerRepository>();
@@ -132,7 +164,7 @@ namespace IPFTechnicalTestUnitTests
             var barsController = new BarsController(repositoryMock);
 
             // Act
-            var result = barsController.PutBar(bar.BarId, bar).Result;
+            var result = barsController.PutBar(bar.BarId, barViewModel).Result;
 
             // Assert
             Assert.AreEqual("NotFoundResult", result.GetType().Name); // status 204
@@ -142,9 +174,18 @@ namespace IPFTechnicalTestUnitTests
         public void Repository_UpdateBarWithInvalidBarId_ReturnBadRequestStatusCode()
         {
             // Arrange
+            var barViewModel = new BarViewModel
+            {
+                BarId = 1,
+                Name = "Test Bar",
+                Address = "Test Address for Test Bar"
+            };
+
             var bar = new Bar
             {
-                BarId = 1
+                BarId = 1,
+                Name = barViewModel.Name,
+                Address = barViewModel.Address
             };
 
             var repositoryMock = Substitute.For<IBeerRepository>();
@@ -152,7 +193,7 @@ namespace IPFTechnicalTestUnitTests
             var barsController = new BarsController(repositoryMock);
 
             // Act
-            var result = barsController.PutBar(999, bar).Result;
+            var result = barsController.PutBar(999, barViewModel).Result;
 
             // Assert
             Assert.AreEqual("BadRequestResult", result.GetType().Name); // status 400
@@ -267,15 +308,6 @@ namespace IPFTechnicalTestUnitTests
             context.SaveChanges();
 
             return context;
-        }
-    }
-    public class TestBeerDbSet<T> :DbSet<Beer>
-    {
-        public override IEntityType EntityType => throw new NotImplementedException();
-
-        public async virtual Task<EntityEntry<Beer>> Add(Beer entity)
-        {
-            return await base.AddAsync(entity);
         }
     }
 }

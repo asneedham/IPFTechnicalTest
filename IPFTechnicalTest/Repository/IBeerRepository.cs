@@ -1,4 +1,5 @@
 ﻿using IPFTechnicalTest.Models;
+using IPFTechnicalTest.ViewModels;
 
 namespace IPFTechnicalTest.Repository
 {
@@ -22,7 +23,7 @@ namespace IPFTechnicalTest.Repository
 
         Task<int> AddBarBeer(int barId, int beerId);
         Task<int> AddBreweryBeer(int breweryId, int beerId);
-        Task<List<Bar>> GetAllBarsAndAssociatedBeers();
-        Task<List<Beer>> GetBeersForBar(int barId);
+        Task<ICollection<Bar>> GetAllBarsAndAssociatedBeers();
+        Task<ICollection<Beer>> GetBeersForBar(int barId);
     }
 }

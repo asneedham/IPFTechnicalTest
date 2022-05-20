@@ -14,7 +14,7 @@ namespace IPFTechnicalTest.Models
         public virtual Brewery Brewery { get; set; }
 
         [ForeignKey("BeerId")]
-        public ICollection<Bar> Bars { get; set; }
+        public virtual ICollection<Bar> Bars { get; set; }
 
     }
 }

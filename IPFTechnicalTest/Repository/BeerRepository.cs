@@ -13,12 +13,16 @@ namespace IPFTechnicalTest.Repository
 
         public async Task<List<Bar>> GetAllBars()
         {
+            _dbContext.Bar.Include(x => x.Beers);
+
             return await _dbContext.Bar.ToListAsync();
         }
 
         public async Task<Bar> GetBar(int id)
         {
-            return await _dbContext.Bar.FindAsync(id);
+            var bar = await _dbContext.Bar.FindAsync(id);
+
+            return bar;
         }
 
         public async Task<int> AddBar(Bar bar)
@@ -187,6 +191,7 @@ namespace IPFTechnicalTest.Repository
             }
 
             bar.Beers.Add(beer);
+            beer.Bars.Add(bar);
 
             return await _dbContext.SaveChangesAsync();
         }
@@ -205,14 +210,13 @@ namespace IPFTechnicalTest.Repository
             return await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<List<Bar>> GetAllBarsAndAssociatedBeers()
+        public async Task<ICollection<Bar>> GetAllBarsAndAssociatedBeers()
         {
             return await _dbContext.Bar.ToListAsync();
         }
 
-        public async Task<List<Beer>> GetBeersForBar(int barId)
+        public async Task<ICollection<Beer>> GetBeersForBar(int barId)
         {
-            var beers = new List<Beer>();
             var bar = await _dbContext.Bar.FirstOrDefaultAsync(x => x.BarId == barId);
 
             if(bar == null)
@@ -220,12 +224,7 @@ namespace IPFTechnicalTest.Repository
                 return null;
             }
 
-            foreach (var beer in bar.Beers)
-            {
-                beers.Add(beer);
-            }
-
-            return beers;
+            return bar.Beers;
         }
     }
 }

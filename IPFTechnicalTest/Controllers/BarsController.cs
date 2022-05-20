@@ -2,6 +2,7 @@
 
 using IPFTechnicalTest.Models;
 using IPFTechnicalTest.Repository;
+using IPFTechnicalTest.ViewModels;
 
 namespace IPFTechnicalTest.Controllers
 {
@@ -16,31 +17,91 @@ namespace IPFTechnicalTest.Controllers
             _repository = repository;
         }
 
-        // GET: api/Bars
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bar>>> GetBar()
+        public async Task<ActionResult<IEnumerable<BarViewModel>>> GetBar()
         {
-            return await _repository.GetAllBars();
+            var dbBars = await _repository.GetAllBars();
+
+            var bars = new List<BarViewModel>();
+            foreach(var dbBar in dbBars)
+            {
+                var bar = new BarViewModel
+                {
+                    BarId = dbBar.BarId,
+                    Name = dbBar.Name,
+                    Address = dbBar.Address
+                };
+
+                foreach (var dbBeer in dbBar.Beers)
+                {
+                    var brewery = new BreweryViewModel
+                    {
+                        BreweryId = dbBeer.Brewery.BreweryId,
+                        Name = dbBeer.Brewery.Name
+                    };
+
+                    var beer = new BeerViewModel
+                    {
+                        BeerId = dbBeer.BeerId,
+                        Name = dbBeer.Name,
+                        PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                        BreweryId = brewery.BreweryId
+                    };
+
+                    brewery.Beers.Add(beer);
+                    bar.Beers.Add(beer);
+                }
+
+                bars.Add(bar);
+            }
+
+            return bars;
         }
 
-        //GET: api/Bars/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Bar>> GetBar(int id)
+        public async Task<ActionResult<BarViewModel>> GetBar(int id)
         {
-            return await _repository.GetBar(id);
+            var dbBar = await _repository.GetBar(id);
+
+            var beers = new List<BeerViewModel>();
+            foreach(var dbBeer in dbBar.Beers)
+            {
+                var beer = new BeerViewModel
+                {
+                    BeerId = dbBeer.BeerId,
+                    BreweryId = dbBeer.Brewery.BreweryId,
+                    Name = dbBeer.Brewery.Name,
+                    PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume
+                };
+
+                beers.Add(beer);
+            }
+
+            var bar = new BarViewModel
+            {
+                BarId = dbBar.BarId,
+                Name = dbBar.Name,
+                Address = dbBar.Address,
+                Beers = beers
+            };
+
+            return bar;
         }
 
-        // PUT: api/Bars/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBar(int id, Bar bar)
+        public async Task<IActionResult> PutBar(int id, BarViewModel bar)
         {
             if (id != bar.BarId)
             {
                 return BadRequest();
             }
 
-            var result = await _repository.UpdateBar(bar);
+            var dbBar = await _repository.GetBar(id);
+
+            dbBar.Address = bar.Address;
+            dbBar.Name = bar.Name;
+
+            var result = await _repository.UpdateBar(dbBar);
 
             if(result == 0)
             {
@@ -50,47 +111,95 @@ namespace IPFTechnicalTest.Controllers
             return NoContent();
         }
 
-        // POST: api/Bars
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Bar>> PostBar(Bar bar)
+        public async Task<ActionResult<BarViewModel>> PostBar(BarViewModel bar)
         {
-            int barId = await _repository.AddBar(bar);
+            var dbBar = new Bar
+            {
+                BarId = bar.BarId,
+                Name = bar.Name,
+                Address = bar.Address
+            };
+
+            int barId = await _repository.AddBar(dbBar);
 
             return CreatedAtAction(nameof(GetBar), new { id = barId }, bar);
         }
 
         [HttpGet("beer")]
-        public async Task<ActionResult<IEnumerable<Bar>>> GetBarsWithBeers()
+        public async Task<ActionResult<List<BarViewModel>>> GetBarsWithBeers()
         {
-            return await _repository.GetAllBars();
+            var dbBars = await _repository.GetAllBars();
+
+            var barViewModels = new List<BarViewModel>();
+            foreach(var dbBar in dbBars)
+            {
+                var bar = new BarViewModel
+                {
+                    BarId = dbBar.BarId,
+                    Address = dbBar.Address,
+                    Name = dbBar.Name
+                };
+
+                foreach(var dbBeer in dbBar.Beers)
+                {
+                    var brewery = new BreweryViewModel
+                    {
+                        BreweryId = dbBeer.Brewery.BreweryId,
+                        Name = dbBeer.Brewery.Name
+                    };
+
+                    var beer = new BeerViewModel
+                    {
+                        BeerId = dbBeer.BeerId,
+                        Name = dbBeer.Name,
+                        PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                        BreweryId = brewery.BreweryId
+                    };
+
+                    brewery.Beers.Add(beer);
+                    bar.Beers.Add(beer);
+                }
+
+                barViewModels.Add(bar);
+            }
+
+            return barViewModels;
         }
 
         [HttpGet("{barId}/beer")]
-        public async Task<ActionResult<Bar>> GetBarWithBeers(int barId)
+        public async Task<ActionResult<BarViewModel>> GetBarWithBeers(int barId)
         {
-            return await _repository.GetBar(barId);
+            var dbBar = await _repository.GetBar(barId);
+
+            var barViewModel = new BarViewModel
+            {
+                BarId = dbBar.BarId,
+                Address = dbBar.Address,
+                Name = dbBar.Name
+            };
+
+            foreach (var dbBeer in dbBar.Beers)
+            {
+                var brewery = new BreweryViewModel
+                {
+                    BreweryId = dbBeer.Brewery.BreweryId,
+                    Name = dbBeer.Brewery.Name
+                };
+
+                var beer = new BeerViewModel
+                {
+                    BeerId = dbBeer.BeerId,
+                    Name = dbBeer.Name,
+                    PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                    BreweryId = brewery.BreweryId
+                };
+
+                brewery.Beers.Add(beer);
+                barViewModel.Beers.Add(beer);
+            }
+
+            return barViewModel;
         }
-
-        [HttpPost("beer")]
-        public async Task<ActionResult<int>> PostBarBeer(int barId, int beerId)
-        {
-            //return await _repository.AddBarBeer(barId, beerId);
-            return Ok();
-        }
-
-        // DELETE: api/Bars/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteBar(int id)
-        //{
-        //    var result = await _repository.DeleteBar(id);
-
-        //    if (!result)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return NoContent();
-        //}
     }
 }

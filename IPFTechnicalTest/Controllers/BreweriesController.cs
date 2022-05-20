@@ -2,6 +2,7 @@
 
 using IPFTechnicalTest.Models;
 using IPFTechnicalTest.Repository;
+using IPFTechnicalTest.ViewModels;
 
 namespace IPFTechnicalTest.Controllers
 {
@@ -16,31 +17,84 @@ namespace IPFTechnicalTest.Controllers
             _repository = repository;
         }
 
-        // GET: api/Breweries
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Brewery>>> GetBrewery()
+        public async Task<ActionResult<IEnumerable<BreweryViewModel>>> GetBrewery()
         {
-            return await _repository.GetAllBreweries();
+            var dbBreweries = await _repository.GetAllBreweries();
+
+            var breweries = new List<BreweryViewModel>();
+            foreach (var dbBrewery in dbBreweries)
+            {
+                var brewery = new BreweryViewModel
+                {
+                    BreweryId = dbBrewery.BreweryId,
+                    Name = dbBrewery.Name
+                };
+
+                foreach (var dbBeer in dbBrewery.Beers)
+                {
+                    var beer = new BeerViewModel
+                    {
+                        BeerId = dbBeer.BeerId,
+                        Name = dbBeer.Name,
+                        PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                        BreweryId = dbBrewery.BreweryId
+                    };
+
+                    brewery.Beers.Add(beer);
+                }
+
+                breweries.Add(brewery);
+            }
+
+            return breweries;
         }
 
-        // GET: api/Breweries/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Brewery>> GetBrewery(int id)
+        public async Task<ActionResult<BreweryViewModel>> GetBrewery(int id)
         {
-            return await _repository.GetBrewery(id);
+            var dbBrewery = await _repository.GetBrewery(id);
+
+            if(dbBrewery == null)
+            {
+                return new BreweryViewModel();
+            }
+
+            var brewery = new BreweryViewModel
+            {
+                BreweryId = dbBrewery.BreweryId,
+                Name = dbBrewery.Name
+            };
+
+            foreach (var dbBeer in dbBrewery.Beers)
+            {
+                var beer = new BeerViewModel
+                {
+                    BeerId = dbBeer.BeerId,
+                    Name = dbBeer.Name,
+                    PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                    BreweryId = dbBrewery.BreweryId
+                };
+
+                brewery.Beers.Add(beer);
+            }
+
+            return brewery;
         }
 
-        // PUT: api/Breweries/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBrewery(int id, Brewery brewery)
+        public async Task<IActionResult> PutBrewery(int id, BreweryViewModel brewery)
         {
             if (id != brewery.BreweryId)
             {
                 return BadRequest();
             }
 
-            var result = await _repository.UpdateBrewery(brewery);
+            var dbBrewery = await _repository.GetBrewery(id);
+
+            dbBrewery.Name = brewery.Name;
+
+            var result = await _repository.UpdateBrewery(dbBrewery);
 
             if (result == 0)
             {
@@ -50,26 +104,77 @@ namespace IPFTechnicalTest.Controllers
             return NoContent();
         }
 
-        // POST: api/Breweries
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Brewery>> PostBrewery(Brewery brewery)
+        public async Task<ActionResult<BreweryViewModel>> PostBrewery(BreweryViewModel brewery)
         {
-            int breweryId = await _repository.AddBrewery(brewery);
+            var dbBrewery = new Brewery
+            {
+                Name = brewery.Name
+            };
+
+            int breweryId = await _repository.AddBrewery(dbBrewery);
 
             return CreatedAtAction(nameof(GetBrewery), new { id = breweryId }, brewery);
         }
 
         [HttpGet("beer")]
-        public async Task<ActionResult<IEnumerable<Brewery>>> GetBreweriesWithBeers()
+        public async Task<ActionResult<IEnumerable<BreweryViewModel>>> GetBreweriesWithBeers()
         {
-            return await _repository.GetAllBreweries();
+            var dbBreweries = await _repository.GetAllBreweries();
+
+            var breweryViewModels = new List<BreweryViewModel>();
+            foreach (var dbBrewery in dbBreweries)
+            {
+                var brewery = new BreweryViewModel
+                {
+                    BreweryId = dbBrewery.BreweryId,
+                    Name = dbBrewery.Name
+                };
+
+                foreach (var dbBeer in dbBrewery.Beers)
+                {
+                    var beer = new BeerViewModel
+                    {
+                        BeerId = dbBeer.BeerId,
+                        Name = dbBeer.Name,
+                        PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                        BreweryId = brewery.BreweryId
+                    };
+
+                    brewery.Beers.Add(beer);
+                }
+
+                breweryViewModels.Add(brewery);
+            }
+
+            return breweryViewModels;
         }
 
         [HttpGet("{breweryId}/beer")]
-        public async Task<ActionResult<Brewery>> GetBreweryWithBeers(int breweryId)
+        public async Task<ActionResult<BreweryViewModel>> GetBreweryWithBeers(int breweryId)
         {
-            return await _repository.GetBrewery(breweryId);
+            var dbBrewery = await _repository.GetBrewery(breweryId);
+
+            var breweryViewModel = new BreweryViewModel
+            {
+                BreweryId = dbBrewery.BreweryId,
+                Name = dbBrewery.Name
+            };
+
+            foreach (var dbBeer in dbBrewery.Beers)
+            {
+                var beer = new BeerViewModel
+                {
+                    BeerId = dbBeer.BeerId,
+                    Name = dbBeer.Name,
+                    PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                    BreweryId = breweryViewModel.BreweryId
+                };
+
+                breweryViewModel.Beers.Add(beer);
+            }
+
+            return breweryViewModel;
         }
 
         [HttpPost("beer")]
@@ -77,19 +182,5 @@ namespace IPFTechnicalTest.Controllers
         {
             return await _repository.AddBreweryBeer(breweryId, beerId);
         }
-
-        // DELETE: api/Breweries/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteBrewery(int id)
-        //{
-        //    var result = await _repository.DeleteBrewery(id);
-
-        //    if (!result)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return NoContent();
-        //}
     }
 }
