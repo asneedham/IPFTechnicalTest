@@ -9,6 +9,7 @@ using IPFTechnicalTest.DataAccess;
 using IPFTechnicalTest.Models;
 using IPFTechnicalTest.Repository;
 using IPFTechnicalTest.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IPFTechnicalTestUnitTests
 {
@@ -72,42 +73,12 @@ namespace IPFTechnicalTestUnitTests
 
             // Act
             var result = barsController.PostBar(barViewModel).Result;
+            var resultObject = (ObjectResult) result.Result;
+            var barObject = (BarViewModel)resultObject.Value;
 
             // Assert
-            repositoryMock.Received().AddBar(bar);
+            Assert.AreEqual(1, barObject.BarId);
         }
-
-        //[TestMethod]
-        //public void Repository_DeleteExistingBar_ReturnNoContentStatusCode()
-        //{
-        //    // Arrange
-        //    var repositoryMock = Substitute.For<IBeerRepository>();
-        //    repositoryMock.DeleteBar(1).ReturnsForAnyArgs(true);
-
-        //    var barsController = new BarsController(repositoryMock);
-
-        //    // Act
-        //    var result = barsController.DeleteBar(1).Result;
-
-        //    // Assert
-        //    Assert.AreEqual("NoContentResult", result.GetType().Name); // status 204
-        //}
-
-        //[TestMethod]
-        //public void Repository_DeleteNonExistantBar_ReturnNotFoundStatusCode()
-        //{
-        //    // Arrange
-        //    var repositoryMock = Substitute.For<IBeerRepository>();
-        //    repositoryMock.DeleteBar(1).ReturnsForAnyArgs(false);
-
-        //    var barsController = new BarsController(repositoryMock);
-
-        //    // Act
-        //    var result = barsController.DeleteBar(1).Result;
-
-        //    // Assert
-        //    Assert.AreEqual("NotFoundResult", result.GetType().Name);  // status 404
-        //}
 
         [TestMethod]
         public void Repository_UpdateBar_ReturnNoContentStatusCode()
@@ -129,6 +100,7 @@ namespace IPFTechnicalTestUnitTests
             };
 
             var repositoryMock = Substitute.For<IBeerRepository>();
+            repositoryMock.GetBar(1).Returns(bar);
             repositoryMock.UpdateBar(bar).ReturnsForAnyArgs(bar.BarId);
 
             var barsController = new BarsController(repositoryMock);
@@ -159,6 +131,7 @@ namespace IPFTechnicalTestUnitTests
             };
 
             var repositoryMock = Substitute.For<IBeerRepository>();
+            repositoryMock.GetBar(1).Returns(bar);
             repositoryMock.UpdateBar(bar).ReturnsForAnyArgs(0);
 
             var barsController = new BarsController(repositoryMock);

@@ -23,7 +23,7 @@ namespace IPFTechnicalTest.Controllers
             var dbBars = await _repository.GetAllBars();
 
             var bars = new List<BarViewModel>();
-            foreach(var dbBar in dbBars)
+            foreach (var dbBar in dbBars)
             {
                 var bar = new BarViewModel
                 {
@@ -32,27 +32,30 @@ namespace IPFTechnicalTest.Controllers
                     Address = dbBar.Address
                 };
 
-                foreach (var dbBeer in dbBar.Beers)
+                if (dbBar.Beers != null)
                 {
-                    var brewery = new BreweryViewModel
+                    foreach (var dbBeer in dbBar.Beers)
                     {
-                        BreweryId = dbBeer.Brewery.BreweryId,
-                        Name = dbBeer.Brewery.Name
-                    };
+                        var brewery = new BreweryViewModel
+                        {
+                            BreweryId = dbBeer.Brewery.BreweryId,
+                            Name = dbBeer.Brewery.Name
+                        };
 
-                    var beer = new BeerViewModel
-                    {
-                        BeerId = dbBeer.BeerId,
-                        Name = dbBeer.Name,
-                        PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
-                        BreweryId = brewery.BreweryId
-                    };
+                        var beer = new BeerViewModel
+                        {
+                            BeerId = dbBeer.BeerId,
+                            Name = dbBeer.Name,
+                            PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume,
+                            BreweryId = brewery.BreweryId
+                        };
 
-                    brewery.Beers.Add(beer);
-                    bar.Beers.Add(beer);
+                        brewery.Beers.Add(beer);
+                        bar.Beers.Add(beer);
+                    }
+
+                    bars.Add(bar);
                 }
-
-                bars.Add(bar);
             }
 
             return bars;
@@ -64,17 +67,21 @@ namespace IPFTechnicalTest.Controllers
             var dbBar = await _repository.GetBar(id);
 
             var beers = new List<BeerViewModel>();
-            foreach(var dbBeer in dbBar.Beers)
+            if (dbBar.Beers != null)
             {
-                var beer = new BeerViewModel
-                {
-                    BeerId = dbBeer.BeerId,
-                    BreweryId = dbBeer.Brewery.BreweryId,
-                    Name = dbBeer.Brewery.Name,
-                    PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume
-                };
 
-                beers.Add(beer);
+                foreach (var dbBeer in dbBar.Beers)
+                {
+                    var beer = new BeerViewModel
+                    {
+                        BeerId = dbBeer.BeerId,
+                        BreweryId = dbBeer.Brewery.BreweryId,
+                        Name = dbBeer.Brewery.Name,
+                        PercentageAlcoholByVolume = dbBeer.PercentageAlcoholByVolume
+                    };
+
+                    beers.Add(beer);
+                }
             }
 
             var bar = new BarViewModel
